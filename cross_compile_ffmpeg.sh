@@ -2,6 +2,8 @@
 # ffmpeg windows cross compile helper/download script, see github repo README
 # Copyright (C) 2012 Roger Pack, the script is under the GPLv3, but output FFmpeg's executables aren't
 
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
 yes_no_sel () {
   unset user_input
   local question="$1"
@@ -148,7 +150,7 @@ EOF
 download_gcc_build_script() {
     local zeranoe_script_name=$1
     rm -f $zeranoe_script_name || exit 1
-    curl -4 https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/$zeranoe_script_name -O --fail || exit 1
+    cp $SCRIPT_DIR/patches/$zeranoe_script_name ./ || exit 1
     chmod u+x $zeranoe_script_name
 }
 
@@ -392,7 +394,11 @@ apply_patch() {
    if [[ -f $patch_name ]]; then
      rm $patch_name || exit 1 # remove old version in case it has been since updated on the server...
    fi
-   curl -4 --retry 5 $url -O --fail || exit 1
+   if [[ $url == http* ]]; then
+       curl -4 $url -O || exit 1
+   else
+       cp $url ./ || exit 1
+   fi
    echo "applying patch $patch_name"
    patch $patch_type < "$patch_name" || exit 1
    touch $patch_done_name || exit 1
@@ -670,8 +676,8 @@ build_qt() {
 #  download_and_unpack_file http://download.qt-project.org/archive/qt/4.8/4.8.1/qt-everywhere-opensource-src-4.8.1.tar.gz
 #  cd qt-everywhere-opensource-src-4.8.1
 
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/imageformats.patch
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/qt-win64.patch
+    apply_patch $SCRIPT_DIR/patches/imageformats.patch
+    apply_patch $SCRIPT_DIR/patches/qt-win64.patch
     # vlc's configure options...mostly
     do_configure "-static -release -fast -no-exceptions -no-stl -no-sql-sqlite -no-qt3support -no-gif -no-libmng -qt-libjpeg -no-libtiff -no-qdbus -no-openssl -no-webkit -sse -no-script -no-multimedia -no-phonon -opensource -no-scripttools -no-opengl -no-script -no-scripttools -no-declarative -no-declarative-debug -opensource -no-s60 -host-little-endian -confirm-license -xplatform win32-g++ -device-option CROSS_COMPILE=$cross_prefix -prefix $mingw_w64_x86_64_prefix -prefix-install -nomake examples"
     if [ ! -f 'already_qt_maked_k' ]; then
@@ -770,7 +776,7 @@ build_libvpx() {
 
   do_git_checkout https://chromium.googlesource.com/webm/libvpx $checkout_dir v1.6.0 # [had probs with master once...so only a stable option presently]
   cd $checkout_dir
-  apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/vpx_160_semaphore.patch -p1 # perhaps someday can remove this after 1.6.0 or mingw fixes it LOL
+  apply_patch $SCRIPT_DIR/patches/vpx_160_semaphore.patch -p1 # perhaps someday can remove this after 1.6.0 or mingw fixes it LOL
   if [[ "$bits_target" = "32" ]]; then
     local config_options="--target=x86-win32-gcc"
   else
@@ -797,7 +803,7 @@ build_libilbc() {
 build_libflite() {
   download_and_unpack_file http://www.speech.cs.cmu.edu/flite/packed/flite-1.4/flite-1.4-release.tar.bz2
   cd flite-1.4-release
-   apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/flite_64.diff
+   apply_patch $SCRIPT_DIR/patches/flite_64.diff
    sed -i.bak "s|i386-mingw32-|$cross_prefix|" configure
    generic_configure
    cpu_count=1 # can't handle it :|
@@ -818,7 +824,7 @@ build_libgsm() {
   download_and_unpack_file http://www.quut.com/gsm/gsm-1.0.14.tar.gz gsm-1.0-pl14
   cd gsm-1.0-pl14
     # patch for openssl to work with it, I think?
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/libgsm.patch
+    apply_patch $SCRIPT_DIR/patches/libgsm.patch
     if [[ ! -f $mingw_w64_x86_64_prefix/include/gsm/gsm.h ]]; then
       # not do_make here since this actually fails [wrongly]
       make $make_prefix_options INSTALL_ROOT=${mingw_w64_x86_64_prefix}
@@ -834,7 +840,7 @@ build_libgsm() {
 build_libopus() {
   download_and_unpack_file http://downloads.xiph.org/releases/opus/opus-1.1.tar.gz
   cd opus-1.1
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/opus11.patch # allow it to work with shared builds
+    apply_patch $SCRIPT_DIR/patches/opus11.patch # allow it to work with shared builds
     generic_configure_make_install
   cd ..
 }
@@ -845,7 +851,7 @@ build_libdvdread() {
   cd libdvdread-4.9.9
   # XXXX better CFLAGS here...
   generic_configure "CFLAGS=-DHAVE_DVDCSS_DVDCSS_H LDFLAGS=-ldvdcss --enable-dlfcn" # vlc patch: "--enable-libdvdcss" # XXX ask how I'm *supposed* to do this to the dvdread peeps [svn?]
-  #apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/dvdread-win32.patch # has been reported to them...
+  #apply_patch $SCRIPT_DIR/patches/dvdread-win32.patch # has been reported to them...
   do_make_and_make_install
   sed -i.bak 's/-ldvdread.*/-ldvdread -ldvdcss/' "$PKG_CONFIG_PATH/dvdread.pc"
   cd ..
@@ -928,7 +934,7 @@ build_libfribidi() {
   download_and_unpack_file http://fribidi.org/download/fribidi-0.19.4.tar.bz2
   cd fribidi-0.19.4
     # make it export symbols right...
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/fribidi.diff
+    apply_patch $SCRIPT_DIR/patches/fribidi.diff
     generic_configure_make_install
   cd ..
 
@@ -1007,7 +1013,7 @@ build_libnettle() {
 build_bzlib2() {
   download_and_unpack_file https://fossies.org/linux/misc/bzip2-1.0.6.tar.gz
   cd bzip2-1.0.6
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/bzip2_cross_compile.diff
+    apply_patch $SCRIPT_DIR/patches/bzip2_cross_compile.diff
     do_make "$make_prefix_options libbz2.a bzip2 bzip2recover install"
   cd ..
 }
@@ -1160,7 +1166,7 @@ build_faac() {
 build_lame() {
   download_and_unpack_file https://sourceforge.net/projects/lame/files/lame/3.99/lame-3.99.5.tar.gz
   cd lame-3.99.5
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/lame3.patch
+    apply_patch $SCRIPT_DIR/patches/lame3.patch
     generic_configure --enable-nasm
     do_make_and_make_install
   cd ..
@@ -1200,8 +1206,8 @@ build_librubberband() {
 build_zvbi() {
   download_and_unpack_file https://sourceforge.net/projects/zapping/files/zvbi/0.2.35/zvbi-0.2.35.tar.bz2
   cd zvbi-0.2.35
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/zvbi-win32.patch
-    apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/zvbi-ioctl.patch
+    apply_patch $SCRIPT_DIR/patches/zvbi-win32.patch
+    apply_patch $SCRIPT_DIR/patches/zvbi-ioctl.patch
     export LIBS=-lpng
     generic_configure " --disable-dvb --disable-bktr --disable-nls --disable-proxy --without-doxygen" # thanks vlc contribs!
     unset LIBS
@@ -1335,7 +1341,7 @@ build_vlc() {
 
   do_git_checkout https://github.com/videolan/vlc.git
   cd vlc_git
-  # apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/vlc_localtime_s.patch # git revision needs it...
+  # apply_patch $SCRIPT_DIR/patches/vlc_localtime_s.patch # git revision needs it...
 
   # outdated and patch doesn't apply cleanly anymore apparently...
   #if [[ "$non_free" = "y" ]]; then
@@ -1427,7 +1433,7 @@ build_mp4box() { # like build_gpac
 build_libMXF() {
   download_and_unpack_file https://sourceforge.net/projects/ingex/files/1.0.0/libMXF/libMXF-src-1.0.0.tgz "libMXF-src-1.0.0"
   cd libMXF-src-1.0.0
-  apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/libMXF.diff
+  apply_patch $SCRIPT_DIR/patches/libMXF.diff
   do_make "MINGW_CC_PREFIX=$cross_prefix"
   #
   # Manual equivalent of make install.  Enable it if desired.  We shouldn't need it in theory since we never use libMXF.a file and can just hand pluck out the *.exe files already...
@@ -1524,7 +1530,7 @@ build_ffmpeg() {
     # libfaac deemed too poor quality and becomes the default if included -- add it in and uncomment the build_faac line to include it, if anybody ever wants it...
     # To use fdk-aac in VLC, we need to change FFMPEG's default (aac), but I haven't found how to do that... So I disabled it. This could be an new option for the script? (was --disable-decoder=aac )
     # other possible options: --enable-openssl [unneeded since we use gnutls]
-    #  apply_patch https://raw.githubusercontent.com/rdp/ffmpeg-windows-build-helpers/master/patches/nvresize2.patch "-p1" # uncomment if you want to test nvresize filter [et al] http://ffmpeg.org/pipermail/ffmpeg-devel/2015-November/182781.html patch worked with 7ab37cae34b3845
+    #  apply_patch $SCRIPT_DIR/patches/nvresize2.patch "-p1" # uncomment if you want to test nvresize filter [et al] http://ffmpeg.org/pipermail/ffmpeg-devel/2015-November/182781.html patch worked with 7ab37cae34b3845
   fi
 
   config_options="$config_options --enable-runtime-cpudetect" # not sure what this even does but this is the most compatible
