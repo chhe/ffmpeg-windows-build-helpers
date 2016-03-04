@@ -773,8 +773,11 @@ build_libopenjpeg() {
 
 build_libvpx() {
   local checkout_dir="libvpx_git"
-
-  do_git_checkout https://chromium.googlesource.com/webm/libvpx $checkout_dir v1.6.0 # [had probs with master once...so only a stable option presently]
+  if [[ $prefer_stable = "y" ]]; then
+    do_git_checkout https://chromium.googlesource.com/webm/libvpx $checkout_dir v1.6.0 # [had probs with master once...so only a stable option presently]
+  else
+    do_git_checkout https://chromium.googlesource.com/webm/libvpx $checkout_dir
+  fi
   cd $checkout_dir
   apply_patch $SCRIPT_DIR/patches/vpx_160_semaphore.patch -p1 # perhaps someday can remove this after 1.6.0 or mingw fixes it LOL
   if [[ "$bits_target" = "32" ]]; then
