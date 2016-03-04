@@ -754,7 +754,7 @@ build_libsnappy() {
 }
 
 build_wavpack() {
-  generic_download_and_make_and_install http://wavpack.com/wavpack-4.70.0.tar.bz2
+  generic_download_and_make_and_install http://wavpack.com/wavpack-4.75.2.tar.bz2
 }
 
 build_libwebp() {
@@ -846,8 +846,8 @@ build_libgsm() {
 }
 
 build_libopus() {
-  download_and_unpack_file http://downloads.xiph.org/releases/opus/opus-1.1.tar.gz
-  cd opus-1.1
+  download_and_unpack_file http://downloads.xiph.org/releases/opus/opus-1.1.2.tar.gz
+  cd opus-1.1.2
     apply_patch $SCRIPT_DIR/patches/opus11.patch # allow it to work with shared builds
     generic_configure_make_install
   cd ..
@@ -908,7 +908,7 @@ build_libogg() {
 }
 
 build_libvorbis() {
-  generic_download_and_make_and_install http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.4.tar.gz
+  generic_download_and_make_and_install http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.5.tar.gz
 }
 
 build_libspeexdsp() {
@@ -1035,7 +1035,7 @@ build_zlib() {
 }
 
 build_libxvid() {
-  download_and_unpack_file http://downloads.xvid.org/downloads/xvidcore-1.3.3.tar.gz xvidcore
+  download_and_unpack_file http://downloads.xvid.org/downloads/xvidcore-1.3.4.tar.gz xvidcore
   cd xvidcore/build/generic
   do_configure "--host=$host_target --prefix=$mingw_w64_x86_64_prefix $config_opts" # no static option...
   sed -i.bak "s/-mno-cygwin//" platform.inc # remove old compiler flag that now apparently breaks us
