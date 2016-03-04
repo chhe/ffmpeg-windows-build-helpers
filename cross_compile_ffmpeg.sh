@@ -602,7 +602,12 @@ build_libx264() {
     checkout_dir="${checkout_dir}_normal_bitdepth"
   fi
 
-  do_git_checkout "http://repo.or.cz/r/x264.git" $checkout_dir "origin/stable" # guess we always prefer stable here...
+  if [[ $prefer_stable = "n" ]]; then
+      do_git_checkout "http://repo.or.cz/r/x264.git" $checkout_dir "origin/master"
+  else
+      do_git_checkout "http://repo.or.cz/r/x264.git" $checkout_dir "origin/stable"
+  fi
+
   cd $checkout_dir
 
   local configure_flags="--host=$host_target --enable-static --cross-prefix=$cross_prefix --prefix=$mingw_w64_x86_64_prefix --enable-strip" # --enable-win32thread --enable-debug is another useful option here?
