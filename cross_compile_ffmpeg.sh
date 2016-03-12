@@ -1497,6 +1497,7 @@ build_ffmpeg() {
   if [[ $shared_or_static == "shared" ]]; then
     output_dir=${output_dir}_shared
     final_install_dir=`pwd`/${output_dir}.installed
+    rm -Rf $final_install_dir
     postpend_configure_opts="--enable-shared --disable-static $postpend_configure_opts"
     # avoid installing this to system?
     postpend_configure_opts="$postpend_configure_opts --prefix=$final_install_dir --disable-libgme" # gme broken for shared as of yet TODO...
