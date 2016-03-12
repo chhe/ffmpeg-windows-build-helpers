@@ -1504,7 +1504,7 @@ build_ffmpeg() {
     postpend_configure_opts="--enable-static --disable-shared $postpend_configure_opts --prefix=$mingw_w64_x86_64_prefix"
   fi
 
-  do_git_checkout $git_url $output_dir $ffmpeg_git_checkout_version
+  do_git_checkout $git_url ${output_dir} ${ffmpeg_revision_or_branch}
   cd $output_dir
 
   if [ "$bits_target" = "32" ]; then
@@ -1739,6 +1739,7 @@ else
 fi
 
 # variables with their defaults
+ffmpeg_revision_or_branch=master
 build_ffmpeg_static=y
 build_ffmpeg_shared=n
 build_dvbtee=n
@@ -1764,7 +1765,7 @@ while true; do
     -h | --help ) echo "available option=default_value:
       --build-ffmpeg-static=y  (the "normal" ffmpeg.exe build, on by default)
       --build-ffmpeg-shared=n  (ffmpeg with .dll files as well as .exe files)
-      --ffmpeg-git-checkout-version=[master] if you want to build a particular version of FFmpeg, ex: n3.1.1 or a specific git hash
+      --ffmpeg-revision-or-branch=master
       --gcc-cpu-count=[number of cpu cores set it higher than 1 if you have multiple cores and > 1GB RAM, this speeds up initial cross compiler build. FFmpeg build uses number of cores no matter what]
       --disable-nonfree=y (set to n to include nonfree like libfdk-aac)
       --build-intel-qsv=y (set to y to include the [non windows xp compat.] qsv library and ffmpeg module. NB this not not hevc_qsv...
@@ -1808,6 +1809,7 @@ while true; do
                  disable_nonfree=n; git_get_latest=y; sandbox_ok=y; build_intel_qsv=y; build_dvbtee=y; build_x264_with_libav=y; shift ;;
     -d         ) gcc_cpu_count=$cpu_count; disable_nonfree="y"; sandbox_ok="y"; compiler_flavors="win32"; git_get_latest="n"; shift ;;
     --compiler-flavors=* ) compiler_flavors="${1#*=}"; shift ;;
+    --ffmpeg-revision-or-branch=* ) ffmpeg_revision_or_branch="${1#*=}"; shift ;;
     --build-ffmpeg-static=* ) build_ffmpeg_static="${1#*=}"; shift ;;
     --build-ffmpeg-shared=* ) build_ffmpeg_shared="${1#*=}"; shift ;;
     --prefer-stable=* ) prefer_stable="${1#*=}"; shift ;;
