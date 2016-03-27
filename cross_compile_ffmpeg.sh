@@ -781,7 +781,7 @@ build_libvpx() {
   if [[ $prefer_stable = "y" ]]; then
     do_git_checkout https://chromium.googlesource.com/webm/libvpx $checkout_dir v1.6.0 # [had probs with master once...so only a stable option presently]
   else
-    do_git_checkout https://chromium.googlesource.com/webm/libvpx $checkout_dir
+    do_git_checkout https://chromium.googlesource.com/webm/libvpx $checkout_dir $libvpx_revision_or_branch
   fi
   cd $checkout_dir
   apply_patch $SCRIPT_DIR/patches/vpx_160_semaphore.patch -p1 # perhaps someday can remove this after 1.6.0 or mingw fixes it LOL
@@ -1740,6 +1740,7 @@ else
 fi
 
 # variables with their defaults
+libvpx_revision_or_branch=master
 ffmpeg_revision_or_branch=master
 build_ffmpeg_static=y
 build_ffmpeg_shared=n
@@ -1767,6 +1768,7 @@ while true; do
       --build-ffmpeg-static=y  (the "normal" ffmpeg.exe build, on by default)
       --build-ffmpeg-shared=n  (ffmpeg with .dll files as well as .exe files)
       --ffmpeg-revision-or-branch=master
+      --libvpx-revision-or-branch=master
       --gcc-cpu-count=[number of cpu cores set it higher than 1 if you have multiple cores and > 1GB RAM, this speeds up initial cross compiler build. FFmpeg build uses number of cores no matter what]
       --disable-nonfree=y (set to n to include nonfree like libfdk-aac)
       --build-intel-qsv=y (set to y to include the [non windows xp compat.] qsv library and ffmpeg module. NB this not not hevc_qsv...
@@ -1811,6 +1813,7 @@ while true; do
     -d         ) gcc_cpu_count=$cpu_count; disable_nonfree="y"; sandbox_ok="y"; compiler_flavors="win32"; git_get_latest="n"; shift ;;
     --compiler-flavors=* ) compiler_flavors="${1#*=}"; shift ;;
     --ffmpeg-revision-or-branch=* ) ffmpeg_revision_or_branch="${1#*=}"; shift ;;
+    --libvpx-revision-or-branch=* ) libvpx_revision_or_branch="${1#*=}"; shift ;;
     --build-ffmpeg-static=* ) build_ffmpeg_static="${1#*=}"; shift ;;
     --build-ffmpeg-shared=* ) build_ffmpeg_shared="${1#*=}"; shift ;;
     --prefer-stable=* ) prefer_stable="${1#*=}"; shift ;;
