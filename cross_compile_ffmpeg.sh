@@ -1740,8 +1740,8 @@ else
 fi
 
 # variables with their defaults
-libvpx_revision_or_branch=master
-ffmpeg_revision_or_branch=master
+libvpx_revision_or_branch=origin/master
+ffmpeg_revision_or_branch=origin/master
 build_ffmpeg_static=y
 build_ffmpeg_shared=n
 build_dvbtee=n
@@ -1767,8 +1767,8 @@ while true; do
     -h | --help ) echo "available option=default_value:
       --build-ffmpeg-static=y  (the "normal" ffmpeg.exe build, on by default)
       --build-ffmpeg-shared=n  (ffmpeg with .dll files as well as .exe files)
-      --ffmpeg-revision-or-branch=master
-      --libvpx-revision-or-branch=master
+      --ffmpeg-revision-or-branch=origin/master
+      --libvpx-revision-or-branch=origin/master
       --gcc-cpu-count=[number of cpu cores set it higher than 1 if you have multiple cores and > 1GB RAM, this speeds up initial cross compiler build. FFmpeg build uses number of cores no matter what]
       --disable-nonfree=y (set to n to include nonfree like libfdk-aac)
       --build-intel-qsv=y (set to y to include the [non windows xp compat.] qsv library and ffmpeg module. NB this not not hevc_qsv...
