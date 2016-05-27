@@ -509,7 +509,9 @@ build_libx265() {
     fi
     cd source
 
-    # hg checkout 9b0c9b # no longer needed, but once was...left here so I know how :)
+    if [ ! -z "$x265_commit" ]; then
+        hg checkout $x265_commit
+    fi
 
     local new_hg_version=`hg --debug id -i`
     if [[ "$old_hg_version" != "$new_hg_version" ]]; then
@@ -1742,6 +1744,7 @@ fi
 # variables with their defaults
 libvpx_revision_or_branch=origin/master
 ffmpeg_revision_or_branch=origin/master
+x265_commit=
 build_ffmpeg_static=y
 build_ffmpeg_shared=n
 build_dvbtee=n
@@ -1769,6 +1772,7 @@ while true; do
       --build-ffmpeg-shared=n  (ffmpeg with .dll files as well as .exe files)
       --ffmpeg-revision-or-branch=origin/master
       --libvpx-revision-or-branch=origin/master
+      --x265-commit= (only used when prefer-stable=n, if none given we will use the latest commit)
       --gcc-cpu-count=[number of cpu cores set it higher than 1 if you have multiple cores and > 1GB RAM, this speeds up initial cross compiler build. FFmpeg build uses number of cores no matter what]
       --disable-nonfree=y (set to n to include nonfree like libfdk-aac)
       --build-intel-qsv=y (set to y to include the [non windows xp compat.] qsv library and ffmpeg module. NB this not not hevc_qsv...
@@ -1814,6 +1818,7 @@ while true; do
     --compiler-flavors=* ) compiler_flavors="${1#*=}"; shift ;;
     --ffmpeg-revision-or-branch=* ) ffmpeg_revision_or_branch="${1#*=}"; shift ;;
     --libvpx-revision-or-branch=* ) libvpx_revision_or_branch="${1#*=}"; shift ;;
+    --x265-commit=* ) x265_commit="${1#*=}"; shift ;;
     --build-ffmpeg-static=* ) build_ffmpeg_static="${1#*=}"; shift ;;
     --build-ffmpeg-shared=* ) build_ffmpeg_shared="${1#*=}"; shift ;;
     --prefer-stable=* ) prefer_stable="${1#*=}"; shift ;;
