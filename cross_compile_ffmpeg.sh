@@ -709,15 +709,6 @@ build_libsoxr() {
 }
 
 
-build_libebur128() {
-  do_git_checkout https://github.com/jiixyj/libebur128.git
-  cd libebur128_git
-    sed -i.bak 's/ SHARED / STATIC /' ebur128/CMakeLists.txt # no option for STATIC only [?] so removed shared LOL
-    do_cmake_and_install "-DENABLE_INTERNAL_QUEUE_H:BOOL=ON"
-    # can't add -lspeexdsp to its .pc file, it doesn't have one, so just add to ffmpeg configure flags <sigh> XXXX remove once ebur bumped and it doesn't have that dependency as much [?]
-  cd ..
-}
-
 build_libxavs() {
   do_svn_checkout https://svn.code.sf.net/p/xavs/code/trunk xavs
   cd xavs
@@ -1653,7 +1644,6 @@ build_dependencies() {
   build_libxvid
   build_libxavs
   build_libsoxr
-  #build_libebur128 # needs speex # Now included in ffmpeg as internal library
   build_libx265
   build_libopenh264
 
