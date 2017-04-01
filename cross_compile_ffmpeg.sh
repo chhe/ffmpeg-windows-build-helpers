@@ -752,7 +752,7 @@ build_wavpack() {
 }
 
 build_libwebp() {
-  generic_download_and_make_and_install http://downloads.webmproject.org/releases/webp/libwebp-0.5.0.tar.gz
+  generic_download_and_make_and_install http://downloads.webmproject.org/releases/webp/libwebp-0.6.0.tar.gz
 }
 
 build_libpng() {
