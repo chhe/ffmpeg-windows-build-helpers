@@ -1046,8 +1046,8 @@ build_libxvid() {
 }
 
 build_fontconfig() {
-  download_and_unpack_file https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.11.94.tar.gz
-  cd fontconfig-2.11.94
+  download_and_unpack_file https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.12.1.tar.gz
+  cd fontconfig-2.12.1
     export CFLAGS= # compile fails with -march=sandybridge ... with mingw 4.0.6 at least ...
     generic_configure --disable-docs
     do_make_and_make_install
