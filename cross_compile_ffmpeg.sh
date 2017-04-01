@@ -458,7 +458,8 @@ generic_download_and_make_and_install() {
 do_git_checkout_and_make_install() {
   local url=$1
   local git_checkout_name=$(basename $url | sed s/\.git/_git/) # http://y/abc.git -> abc_git
-  do_git_checkout $url $git_checkout_name
+  local desired_branch=$2
+  do_git_checkout $url $git_checkout_name "$desired_branch"
   cd $git_checkout_name
     generic_configure_make_install
   cd ..
@@ -743,7 +744,7 @@ build_liblzma() {
 }
 
 build_libsnappy() {
-  generic_download_and_make_and_install https://sourceforge.net/projects/ffmpegwindowsbi/files/dependency_libraries/google-snappy-1.1.3-14-g32d6d7d.tar.gz google-snappy-32d6d7d
+  do_git_checkout_and_make_install https://github.com/google/snappy.git 2d99bd1
 }
 
 build_wavpack() {
