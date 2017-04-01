@@ -731,8 +731,8 @@ build_libbs2b() {
 }
 
 build_libgme_game_music_emu() {
-  download_and_unpack_file https://sourceforge.net/projects/ffmpegwindowsbi/files/dependency_libraries/game-music-emu-0.6.0.tar.bz2 # was bitbucket, but cygwin curl didn't like it :|
-  cd game-music-emu-0.6.0
+  download_and_unpack_file https://bitbucket.org/mpyne/game-music-emu/downloads/game-music-emu-0.6.1.tar.bz2
+  cd game-music-emu-0.6.1
     sed -i.bak "s|SHARED|STATIC|" gme/CMakeLists.txt
     do_cmake_and_install
   cd ..
