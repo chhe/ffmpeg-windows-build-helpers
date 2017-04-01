@@ -740,7 +740,7 @@ build_libgme_game_music_emu() {
 }
 
 build_liblzma() {
-  generic_download_and_make_and_install http://tukaani.org/xz/xz-5.2.2.tar.bz2
+  generic_download_and_make_and_install http://tukaani.org/xz/xz-5.2.3.tar.bz2
 }
 
 build_libsnappy() {
