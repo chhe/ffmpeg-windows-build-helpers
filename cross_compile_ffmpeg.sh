@@ -839,9 +839,9 @@ build_libgsm() {
 }
 
 build_libopus() {
-  download_and_unpack_file http://downloads.xiph.org/releases/opus/opus-1.1.2.tar.gz
-  cd opus-1.1.2
-    apply_patch $SCRIPT_DIR/patches/opus11.patch # allow it to work with shared builds
+  download_and_unpack_file http://downloads.xiph.org/releases/opus/opus-1.1.4.tar.gz
+  cd opus-1.1.4
+    #apply_patch $SCRIPT_DIR/patches/opus11.patch # allow it to work with shared builds
     generic_configure_make_install
   cd ..
 }
