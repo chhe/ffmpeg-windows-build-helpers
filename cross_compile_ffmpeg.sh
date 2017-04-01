@@ -748,7 +748,7 @@ build_libsnappy() {
 }
 
 build_wavpack() {
-  generic_download_and_make_and_install http://wavpack.com/wavpack-4.75.2.tar.bz2
+  generic_download_and_make_and_install http://wavpack.com/wavpack-5.1.0.tar.bz2
 }
 
 build_libwebp() {
