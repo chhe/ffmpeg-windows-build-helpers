@@ -1293,12 +1293,10 @@ build_libcurl() {
   generic_download_and_make_and_install https://curl.haxx.se/download/curl-7.46.0.tar.gz
 }
 
-build_netcdf() {
-  # used for sofalizer filter
-  download_and_unpack_file http://gfd-dennou.org/arch/ucar/unidata/pub/netcdf/netcdf-4.4.1.tar.gz
-  cd netcdf-4.4.1
-    generic_configure --disable-netcdf-4 --disable-dap # its dependencies were *hard* LOL
-    do_make_and_make_install
+build_libmysofa() {
+  do_git_checkout https://github.com/hoene/libmysofa.git
+  cd libmysofa_git
+    do_cmake_and_install "-DBUILD_SHARED_LIBS:bool=off -DBUILD_TESTS=no" # tests fail to compile.
   cd ..
 }
 
@@ -1514,7 +1512,7 @@ build_ffmpeg() {
   fi
 
   init_options="--arch=$arch --target-os=mingw32 --cross-prefix=$cross_prefix --pkg-config=pkg-config --disable-w32threads"
-  config_options="$init_options --enable-libsoxr --enable-fontconfig --enable-libass --enable-libbluray --enable-iconv --enable-libtwolame --extra-cflags=-DLIBTWOLAME_STATIC --enable-libzvbi --enable-libcaca --enable-libmodplug --extra-libs=-lstdc++ --extra-libs=-lpng --enable-decklink --extra-libs=-loleaut32  --enable-libmp3lame --enable-version3 --enable-zlib --enable-librtmp --enable-libvorbis --enable-libtheora --enable-libspeex --enable-libopenjpeg --enable-gnutls --enable-libgsm --enable-libfreetype --enable-libopus --enable-bzlib --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libvo-amrwbenc --enable-libvpx --enable-libilbc --enable-libwavpack --enable-libwebp --enable-libgme --enable-dxva2 --enable-gray --enable-libopenh264 --enable-libflite --enable-lzma --enable-libsnappy --enable-libzimg --enable-libbs2b"
+  config_options="$init_options --enable-libsoxr --enable-fontconfig --enable-libass --enable-libbluray --enable-iconv --enable-libtwolame --extra-cflags=-DLIBTWOLAME_STATIC --enable-libzvbi --enable-libcaca --enable-libmodplug --extra-libs=-lstdc++ --extra-libs=-lpng --enable-decklink --extra-libs=-loleaut32  --enable-libmp3lame --enable-version3 --enable-zlib --enable-librtmp --enable-libvorbis --enable-libtheora --enable-libspeex --enable-libopenjpeg --enable-gnutls --enable-libgsm --enable-libfreetype --enable-libopus --enable-bzlib --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libvo-amrwbenc --enable-libvpx --enable-libilbc --enable-libwavpack --enable-libwebp --enable-libgme --enable-dxva2 --enable-gray --enable-libopenh264 --enable-libmysofa --enable-libflite --enable-lzma --enable-libsnappy --enable-libzimg --enable-libbs2b"
   if [[ $enable_gpl == 'y' ]]; then
     config_options="$config_options --enable-gpl --enable-libx264 --enable-libx265 --enable-frei0r --enable-filter=frei0r --enable-librubberband --enable-libvidstab --enable-libxavs --enable-libxvid --enable-avisynth"
   fi
@@ -1661,7 +1659,7 @@ build_dependencies() {
   build_lame
   build_twolame
   build_vidstab
-  build_netcdf
+  build_libmysofa
   build_libcaca
   build_libmodplug # ffmepg and vlc can use this
   build_zvbi
